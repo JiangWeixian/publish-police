@@ -23,7 +23,7 @@ or exec manually before publish...
 
 ```json
 {
-  "ci:publish": "publish-police && pnpm run build && pnpm changeset publish",
+  "ci:publish": "pnpm run build && publish-police && pnpm changeset publish",
 }
 ```
 
