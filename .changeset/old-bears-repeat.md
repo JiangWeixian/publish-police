@@ -1,5 +1,5 @@
 ---
-"publish-checker": patch
+"publish-police": patch
 ---
 
 check dist before publish

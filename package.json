@@ -1,5 +1,5 @@
 {
-  "name": "publish-checker",
+  "name": "publish-police",
   "version": "0.0.0",
   "description": "check npm dist before publish",
   "keywords": [
@@ -9,13 +9,13 @@
     "dist"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/JiangWeixian/publish-checker#readme",
+  "homepage": "https://github.com/JiangWeixian/publish-police#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JiangWeixian/publish-checker.git"
+    "url": "git+https://github.com/JiangWeixian/publish-police.git"
   },
   "bugs": {
-    "url": "https://github.com/JiangWeixian/publish-checker/issues",
+    "url": "https://github.com/JiangWeixian/publish-police/issues",
     "email": "jiangweixian1994@gmail.com"
   },
   "author": {
