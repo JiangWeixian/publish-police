@@ -1,21 +1,21 @@
 {
-  "name": "@aiou/bin-template",
-  "version": "3.0.0",
-  "description": "templates for cli project",
+  "name": "dist-checker",
+  "version": "0.0.0",
+  "description": "check npm dist",
   "keywords": [
-    "aiou",
+    "npm",
     "cli",
-    "neo",
-    "template"
+    "prepublish",
+    "dist"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/neo-hack/bin-template#readme",
+  "homepage": "https://github.com/JiangWeixian/dist-checker#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/neo-hack/bin-template.git"
+    "url": "git+https://github.com/JiangWeixian/dist-checker.git"
   },
   "bugs": {
-    "url": "https://github.com/neo-hack/bin-template/issues",
+    "url": "https://github.com/JiangWeixian/dist-checker/issues",
     "email": "jiangweixian1994@gmail.com"
   },
   "author": {
@@ -23,7 +23,6 @@
     "email": "jiangweixian1994@gmail.com",
     "url": "https://twitter.com/jiangweixian"
   },
-  "type": "module",
   "bin": {
     "bin-template": "bin/index.mjs"
   },
