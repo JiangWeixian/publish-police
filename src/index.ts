@@ -1,0 +1,1 @@
+export { distCheck } from './lib'
