@@ -5,7 +5,7 @@ const cli = cac()
 
 cli
   .command('')
-  .option('--strict', 'Choose a project type', {
+  .option('--strict', 'Stric mode check', {
     default: true,
   })
   .action((options) => {
