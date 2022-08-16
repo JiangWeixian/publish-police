@@ -3,19 +3,32 @@
 
 [![npm](https://img.shields.io/npm/v/publish-checker)](https://github.com/JiangWeixian/publish-checker) [![GitHub](https://img.shields.io/npm/l/publish-checker)](https://github.com/JiangWeixian/publish-checker)
 
-
-## features
-
-- Native ESM Module development
-- Use [**commander**](https://github.com/tj/commander.js/) build cli application
-- Interaction interface with [**inquirer**](https://github.com/SBoudrias/Inquirer.js/) and [**ora**](https://github.com/sindresorhus/ora)
-- Type safe
-- Release with github workflows and changeset
-- PNPM
-
 ## install 
 
 ```console
-pnpm i -g publish-checker
+pnpm i publish-checker -D
 ```
 
+## usage
+
+set it in `prepublishOnly` script
+
+```json
+{
+  "prepublishOnly": "publish-checker",
+}
+```
+
+or exec manually before publish...
+
+```json
+{
+  "ci:publish": "publish-checker && pnpm run build && pnpm changeset publish",
+}
+```
+
+### options
+
+`strict` - default `true`, e.g. `publish-checker --strict=false`
+
+throw error if `files` not present or empty in `package.json`.
