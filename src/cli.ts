@@ -5,11 +5,11 @@ const cli = cac()
 
 cli
   .command('')
-  .option('--strict [strict]', 'Choose a project type', {
+  .option('--strict', 'Choose a project type', {
     default: true,
   })
-  .action((strict) => {
-    distCheck({ strict })
+  .action((options) => {
+    distCheck({ strict: options.strict })
   })
 
 cli.parse()
