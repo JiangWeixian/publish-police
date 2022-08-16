@@ -1,7 +1,7 @@
-# dist-checker
+# publish-checker
 *check npm package dist before publish*
 
-[![npm](https://img.shields.io/npm/v/dist-checker)](https://github.com/JiangWeixian/dist-checker) [![GitHub](https://img.shields.io/npm/l/dist-checker)](https://github.com/JiangWeixian/dist-checker)
+[![npm](https://img.shields.io/npm/v/publish-checker)](https://github.com/JiangWeixian/publish-checker) [![GitHub](https://img.shields.io/npm/l/publish-checker)](https://github.com/JiangWeixian/publish-checker)
 
 
 ## features
@@ -16,6 +16,6 @@
 ## install 
 
 ```console
-pnpm i -g dist-checker
+pnpm i -g publish-checker
 ```
 
