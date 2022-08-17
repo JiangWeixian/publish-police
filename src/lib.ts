@@ -1,4 +1,4 @@
-import { readJson } from 'fs-extra'
+import { readFileSync } from 'fs'
 import type { PackageJson } from 'type-fest'
 import { globby } from 'globby'
 
@@ -47,7 +47,7 @@ export const distCheck = async ({
 }: Options & { strict?: boolean }) => {
   let files: string[] = []
   try {
-    const config: PackageJson = await readJson(`${cwd}/package.json`)
+    const config: PackageJson = JSON.parse(readFileSync(`${cwd}/package.json`).toString('utf-8'))
     files = config.files ?? []
   } catch (_) {
     throw new Error('package.json not found!')
