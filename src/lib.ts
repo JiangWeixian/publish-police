@@ -31,8 +31,6 @@ export const glob = async (files: string[], options: Options = { cwd: process.cw
     files.map((file) =>
       globby(file, {
         ignore: DefaultIgnore,
-        ignoreFiles: ['.npmignore'],
-        gitignore: true,
         dot: true,
         ...options,
       }),

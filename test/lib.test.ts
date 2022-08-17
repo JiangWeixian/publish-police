@@ -20,7 +20,7 @@ describe('glob', () => {
   })
 
   it('cwd should work', async () => {
-    const results = await glob(['lib'], { cwd: path.resolve(__dirname, './fixtures') })
+    const results = await glob(['lib'], { cwd: path.resolve(__dirname, './fixtures/basic') })
     expect(results[0]).toMatchInlineSnapshot(`
     [
       "lib/.gitkeep",
@@ -33,28 +33,27 @@ describe('glob', () => {
     expect(results.length).toBe(1)
     expect(results[0].length).toBe(0)
   })
-
-  it('.npmignore should work', async () => {
-    const results = await glob(['.changeset'])
-    expect(results.length).toBe(1)
-    expect(results[0].length).toBe(0)
-  })
 })
 
 describe('dist-checker', () => {
   it('non-strict mode should work', async () => {
-    expect(await distCheck({ strict: false })).toBe(true)
+    expect(
+      await distCheck({ strict: false, cwd: path.resolve(__dirname, './fixtures/empty') }),
+    ).toBe(true)
   })
 
   it('strict mode should work', async () => {
-    expect(async () => await distCheck({ strict: true })).to.rejects.toThrow(
-      'files in package.json not found!',
-    )
+    expect(
+      async () =>
+        await distCheck({ strict: true, cwd: path.resolve(__dirname, './fixtures/empty') }),
+    ).to.rejects.toThrow('files in package.json not found!')
   })
 
   it('should work', async () => {
-    expect(await distCheck({ strict: false, cwd: path.resolve(__dirname, './fixtures') })).toBe(
-      true,
-    )
+    const result = await distCheck({
+      strict: false,
+      cwd: path.resolve(__dirname, './fixtures/basic'),
+    })
+    expect(result).toBe(true)
   })
 })
