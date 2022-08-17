@@ -26,6 +26,10 @@
   "bin": {
     "bin-template": "bin/index.mjs"
   },
+  "files": [
+    "lib",
+    "bin"
+  ],
   "engines": {
     "node": ">=14"
   },

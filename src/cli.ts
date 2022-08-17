@@ -11,6 +11,7 @@ cli
   })
   .action((options) => {
     distCheck({ strict: options.strict }).catch((e: Error) => {
+      // catch error then manually print it, makesure changesets/action print to stderr
       consola.error(e.message)
       process.exit(1)
     })
