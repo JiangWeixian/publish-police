@@ -1,39 +1,34 @@
-# @aiou/bin-template
-*build npm cli command application*
+# publish-police
+*check npm package dist before publish*
 
-[![npm](https://img.shields.io/npm/v/@aiou/bin-template)](https://github.com/spring-catponents/bin-template) [![GitHub](https://img.shields.io/npm/l/@aiou/bin-template)](https://github.com/spring-catponents/bin-template) [![stackblitz](https://img.shields.io/badge/%E2%9A%A1%EF%B8%8Fstackblitz-online-blue)](https://stackblitz.com/github/spring-catponents/bin-template)
-
-[Edit on StackBlitz ⚡️](https://stackblitz.com/github/spring-catponents/bin-template)
-
-## features
-
-- Native ESM Module development
-- Use [**commander**](https://github.com/tj/commander.js/) build cli application
-- Interaction interface with [**inquirer**](https://github.com/SBoudrias/Inquirer.js/) and [**ora**](https://github.com/sindresorhus/ora)
-- Type safe
-- Release with github workflows and changeset
-- PNPM
+[![npm](https://img.shields.io/npm/v/publish-police)](https://github.com/JiangWeixian/publish-police) [![GitHub](https://img.shields.io/npm/l/publish-police)](https://github.com/JiangWeixian/publish-police)
 
 ## install 
 
 ```console
-pnpm i -g @aiou/bin-template
+pnpm i publish-police -D
 ```
 
-## commands
+## usage
 
-### `hello`
+set it in `prepublishOnly` script
 
-say hello world with select option
+```json
+{
+  "prepublishOnly": "publish-police",
+}
+```
 
-`bin-template hello [word]`
+or exec manually before publish...
 
-### `loading`
+```json
+{
+  "ci:publish": "pnpm run build && publish-police && pnpm changeset publish",
+}
+```
 
-display loading and loading text
+### options
 
-`bin-template loading --text=[text] [ms]`
+`strict` - default `true`, e.g. `publish-police --strict=false`
 
-## development
-
-- `pnpm run build`
+throw error if `files` not present or empty in `package.json`.

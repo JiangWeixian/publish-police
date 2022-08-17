@@ -26,13 +26,14 @@ const DefaultIgnore = [
   'node_modules',
 ]
 
-export const glob = async (files: string[], options: Options) => {
+export const glob = async (files: string[], options: Options = { cwd: process.cwd() }) => {
   const results = await Promise.all(
     files.map((file) =>
       globby(file, {
         ignore: DefaultIgnore,
         ignoreFiles: ['.npmignore'],
         gitignore: true,
+        dot: true,
         ...options,
       }),
     ),
@@ -40,15 +41,32 @@ export const glob = async (files: string[], options: Options) => {
   return results
 }
 
-export const distCheck = async (options: Options) => {
-  let files: string[] | undefined
+export const distCheck = async ({
+  strict = true,
+  cwd = process.cwd(),
+}: Options & { strict?: boolean }) => {
+  let files: string[] = []
   try {
-    const config: PackageJson = await readJson(`${options.cwd}/package.json`)
-    files = config.files
-  } catch (_) {}
-  if (!files) {
+    const config: PackageJson = await readJson(`${cwd}/package.json`)
+    files = config.files ?? []
+  } catch (_) {
+    throw new Error('package.json not found!')
+  }
+  if (files.length === 0 && strict) {
     throw new Error('files in package.json not found!')
   }
-  const results = await glob(files, options)
-  return results.every((f) => !f.length)
+  // in non-strict mode, empty files is allowed
+  // npm will always upload files in current directory
+  if (files.length === 0 && !strict) {
+    return true
+  }
+  const results = await glob(files, { cwd })
+  for (const [index, pattern] of files.entries()) {
+    if (!results[index].length) {
+      throw new Error(
+        `\`${pattern}\` looks like empty or not exit! Maybe you add it in ignore files or build failed?`,
+      )
+    }
+  }
+  return true
 }
