@@ -24,7 +24,7 @@
     "url": "https://twitter.com/jiangweixian"
   },
   "bin": {
-    "bin-template": "bin/index.mjs"
+    "publish-police": "bin/index.mjs"
   },
   "files": [
     "lib",
