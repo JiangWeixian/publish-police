@@ -2,7 +2,7 @@ import cac from 'cac'
 import { distCheck } from './lib'
 import consola from 'consola'
 
-const cli = cac()
+const cli = cac('publish-police')
 
 cli
   .command('')
