@@ -1,6 +1,6 @@
 {
   "name": "publish-police",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "check npm dist before publish",
   "keywords": [
     "npm",
