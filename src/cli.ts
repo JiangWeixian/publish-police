@@ -6,7 +6,7 @@ const cli = cac('publish-police')
 
 cli
   .command('')
-  .option('--strict', 'Stric mode check', {
+  .option('--strict', 'Strict mode check', {
     default: true,
   })
   .action((options) => {

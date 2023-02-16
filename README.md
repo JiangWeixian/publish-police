@@ -9,6 +9,23 @@
 pnpm i publish-police -D
 ```
 
+## features
+
+```json
+{
+  "files": ["<pattern>"]
+}
+```
+
+check `files` fields in `package.json` is exit on disk.
+
+### options
+
+`strict` - default `true`, e.g. `publish-police --strict=false`
+
+throw error if `files` not present or empty in `package.json`.
+
+
 ## usage
 
 set it in `prepublishOnly` script
@@ -26,9 +43,3 @@ or exec manually before publish...
   "ci:publish": "pnpm run build && publish-police && pnpm changeset publish",
 }
 ```
-
-### options
-
-`strict` - default `true`, e.g. `publish-police --strict=false`
-
-throw error if `files` not present or empty in `package.json`.
