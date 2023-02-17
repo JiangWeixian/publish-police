@@ -11,7 +11,7 @@ beforeAll(() => {
 
 describe('glob', () => {
   it('non exit files should return empty array', async () => {
-    const results = await glob(['dist'])
+    const results = await glob(['lib'])
     expect(results.length).toBe(1)
     expect(results[0].length).toBe(0)
   })
