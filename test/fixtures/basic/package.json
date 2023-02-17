@@ -1,4 +1,11 @@
 {
+  "exports": {
+    ".": "lib/main.js",
+    "feature": {
+      "import": "lib/main.js"
+    }
+  },
+  "main": "lib/main.js",
   "files": [
     "lib"
   ]

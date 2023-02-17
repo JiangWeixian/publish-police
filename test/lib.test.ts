@@ -1,4 +1,4 @@
-import { glob, distCheck } from '../src/lib'
+import { glob, filesCheck, mainCheck, exportsCheck } from '../src/lib'
 import { describe, it, expect } from 'vitest'
 import path from 'path'
 
@@ -22,9 +22,10 @@ describe('glob', () => {
   it('cwd should work', async () => {
     const results = await glob(['lib'], { cwd: path.resolve(__dirname, './fixtures/basic') })
     expect(results[0]).toMatchInlineSnapshot(`
-    [
-      "lib/.gitkeep",
-    ]
+      [
+        "lib/.gitkeep",
+        "lib/main.js",
+      ]
     `)
   })
 
@@ -35,25 +36,43 @@ describe('glob', () => {
   })
 })
 
-describe('dist-checker', () => {
+describe('files-checker', () => {
   it('non-strict mode should work', async () => {
     expect(
-      await distCheck({ strict: false, cwd: path.resolve(__dirname, './fixtures/empty') }),
+      await filesCheck({ strict: false, cwd: path.resolve(__dirname, './fixtures/empty') }),
     ).toBe(true)
   })
 
   it('strict mode should work', async () => {
     expect(
       async () =>
-        await distCheck({ strict: true, cwd: path.resolve(__dirname, './fixtures/empty') }),
+        await filesCheck({ strict: true, cwd: path.resolve(__dirname, './fixtures/empty') }),
     ).to.rejects.toThrow('files in package.json not found!')
   })
 
   it('should work', async () => {
-    const result = await distCheck({
+    const result = await filesCheck({
       strict: false,
       cwd: path.resolve(__dirname, './fixtures/basic'),
     })
     expect(result).toBe(true)
+  })
+})
+
+describe('main checker', () => {
+  it('should work', () => {
+    mainCheck({ cwd: path.resolve(__dirname, './fixtures/basic') })
+  })
+  it('throw error if empty main or module field', () => {
+    mainCheck({ cwd: path.resolve(__dirname, './fixtures/empty') })
+  })
+})
+
+describe('exports checker', () => {
+  it('should work', () => {
+    exportsCheck({ cwd: path.resolve(__dirname, './fixtures/basic') })
+  })
+  it('throw error if empty main or module field', () => {
+    exportsCheck({ cwd: path.resolve(__dirname, './fixtures/empty') })
   })
 })
