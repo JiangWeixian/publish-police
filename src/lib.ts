@@ -78,10 +78,10 @@ export const filesCheck = async ({ strict = true, cwd = process.cwd() }: CheckOp
     const config: PackageJson = JSON.parse(readFileSync(`${cwd}/package.json`).toString('utf-8'))
     files = config.files ?? []
   } catch (_) {
-    throw new Error('package.json not found!')
+    throw new Error('error: package.json not found!')
   }
   if (files.length === 0 && strict) {
-    throw new Error('files in package.json not found!')
+    throw new Error('error: files in package.json not found!')
   }
   // in non-strict mode, empty files is allowed
   // npm will always upload files in current directory
@@ -92,7 +92,7 @@ export const filesCheck = async ({ strict = true, cwd = process.cwd() }: CheckOp
   for (const [index, pattern] of files.entries()) {
     if (!results[index].length) {
       throw new Error(
-        `\`${pattern}\` looks like empty or not exist! Maybe you add it in ignore files or build failed?`,
+        `error: \`${pattern}\` looks like empty or not exist! Maybe you add it in ignore files or build failed?`,
       )
     }
   }
@@ -105,10 +105,10 @@ export const filesCheck = async ({ strict = true, cwd = process.cwd() }: CheckOp
 export const mainCheck = async ({ cwd = process.cwd() }: CheckOptions) => {
   const pkg = readPkgJson(cwd)
   if (pkg.main && !existsSync(path.resolve(cwd, pkg.main))) {
-    console.log(`main: ${pkg.main} is not exist!`)
+    throw new Error(`error: main field ${pkg.main} is not exist!`)
   }
   if (pkg.module && !existsSync(path.resolve(cwd, pkg.module))) {
-    console.log(`module: ${pkg.module} is not exist!`)
+    throw new Error(`error: module field ${pkg.module} is not exist!`)
   }
 }
 
@@ -129,7 +129,7 @@ export const exportsCheck = async ({ cwd = process.cwd() }: CheckOptions) => {
     },
   )
   if (patterns.length !== 0) {
-    const msg = `${patterns.map((v) => `${v.subpath}: ${v.pattern}`).join('\n')} are not exist!`
-    console.log(msg)
+    const msg = `${patterns.map((v) => `${v.subpath}: ${v.pattern}`).join('\n')} \n are not exist!`
+    throw new Error(msg)
   }
 }

@@ -1,18 +1,30 @@
 import cac from 'cac'
-import { filesCheck } from './lib'
-import consola from 'consola'
+import { filesCheck, mainCheck, exportsCheck } from './lib'
+import Listr from 'listr'
+import colors from 'picocolors'
+// @ts-expect-error -- ignore types
+import mlistr from 'listr-multiline-renderer'
 
 const cli = cac('publish-police')
 
 cli
   .command('')
-  .option('--strict', 'Strict mode check', {
+  .option('--strict', '[boolean] Strict mode', {
     default: true,
   })
-  .action((options) => {
-    filesCheck({ strict: options.strict }).catch((e: Error) => {
-      // catch error then manually print it, makesure changesets/action print to stderr
-      consola.error(e.message)
+  .action(async (options) => {
+    const tasks = new Listr(
+      [
+        {
+          title: `Check ${colors.cyan('`files`')} field`,
+          task: () => filesCheck({ strict: options.strict }),
+        },
+        { title: `Check ${colors.cyan('`main and module`')} field`, task: () => mainCheck({}) },
+        { title: `Check ${colors.cyan('`exports`')} field`, task: () => exportsCheck({}) },
+      ],
+      { renderer: mlistr },
+    )
+    await tasks.run().catch(() => {
       process.exit(1)
     })
   })
