@@ -76,7 +76,7 @@ function omitByDeep(
 export const filesCheck = async ({ strict = true, pkg, cwd = process.cwd() }: CheckOptions) => {
   const files: string[] = pkg?.files ?? []
   if (files.length === 0 && strict) {
-    throw new Error('files in package.json not found!')
+    throw new Error('In strict mode, non-empty `files` is required in package.json!')
   }
   // in non-strict mode, empty files is allowed
   // npm will always upload files in current directory
@@ -87,7 +87,7 @@ export const filesCheck = async ({ strict = true, pkg, cwd = process.cwd() }: Ch
   for (const [index, pattern] of files.entries()) {
     if (!results[index].length) {
       throw new Error(
-        `\`${pattern}\` looks like empty or not exist! Maybe you add it in ignore files or build failed?`,
+        `\`${pattern}\` looks like empty or not exist! Maybe you add it in ignore files by mistake or forget to exec build script?`,
       )
     }
   }
@@ -99,16 +99,20 @@ export const filesCheck = async ({ strict = true, pkg, cwd = process.cwd() }: Ch
  */
 export const mainCheck = async ({ cwd = process.cwd(), pkg }: CheckOptions) => {
   if (pkg?.main && !existsSync(path.resolve(cwd, pkg.main))) {
-    throw new Error(`main field ${pkg.main} is not exist!`)
+    throw new Error(
+      `${pkg.main} in main field is not exist! Maybe you add it in ignore files by mistake or forget to exec build script?`,
+    )
   }
   if (pkg?.module && !existsSync(path.resolve(cwd, pkg.module))) {
-    throw new Error(`module field ${pkg.module} is not exist!`)
+    throw new Error(
+      `${pkg.module} in module field is not exist! Maybe you add it in ignore files by mistake or forget to exec build script?`,
+    )
   }
   return true
 }
 
 /**
- * @description Check `main & module` field file exist or not
+ * @description Check `exports` field file exist or not
  */
 export const exportsCheck = async ({ cwd = process.cwd(), pkg }: CheckOptions) => {
   const exportsField = pkg?.exports
@@ -123,7 +127,11 @@ export const exportsCheck = async ({ cwd = process.cwd(), pkg }: CheckOptions) =
     },
   )
   if (!isEmpty(result)) {
-    const msg = `exports listed in \n${JSON.stringify(result, null, 2)} \nlooks like are not exist!`
+    const msg = `sub-exports listed in \n${JSON.stringify(
+      result,
+      null,
+      2,
+    )} \nlooks like are not exist! Maybe you add it in ignore files by mistake or forget to exec build script?`
     throw new Error(msg)
   }
   return true

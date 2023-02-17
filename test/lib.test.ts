@@ -62,7 +62,7 @@ describe('files-checker', () => {
           cwd: path.resolve(__dirname, './fixtures/empty'),
           pkg: emptyPkg,
         }),
-    ).rejects.toThrow('files in package.json not found!')
+    ).rejects.toThrow('In strict mode, non-empty `files` is required in package.json!')
   })
 
   it('should work', async () => {
