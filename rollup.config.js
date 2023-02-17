@@ -44,7 +44,7 @@ export default defineConfig([
       {
         sourcemap: true,
         entryFileNames: '[name].mjs',
-        dir: 'lib',
+        dir: 'dist',
         chunkFileNames: 'chunks/[name].mjs',
         format: 'esm',
       },

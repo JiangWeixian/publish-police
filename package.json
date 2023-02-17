@@ -27,14 +27,14 @@
     "publish-police": "bin/index.mjs"
   },
   "files": [
-    "lib",
+    "dist",
     "bin"
   ],
   "engines": {
     "node": ">=14"
   },
   "scripts": {
-    "build": "rimraf lib && rollup -c",
+    "build": "rimraf dist && rollup -c",
     "dev": "rollup -c --silent -w",
     "vitest": "vitest",
     "test": "pnpm run build && pnpm run vitest",
