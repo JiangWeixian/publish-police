@@ -2,9 +2,10 @@ import { readFileSync, existsSync } from 'fs'
 import path from 'path'
 import type { PackageJson } from 'type-fest'
 import { globby } from 'globby'
-import { forEach, isObject } from 'lodash-es'
+import { pickBy, isObject, isEmpty } from 'lodash-es'
 
 interface Options {
+  pkg?: PackageJson
   cwd?: string
 }
 
@@ -54,34 +55,28 @@ export const readPkgJson = (cwd = process.cwd()) => {
   }
 }
 
-function eachDeep(
+function omitByDeep(
   obj: Record<string, any> | string[],
-  callback: (v: any, key: string, path: string) => void,
-  parentPath = '',
+  predicate: (value: any, key: string | number) => boolean,
 ) {
-  forEach(obj, (value, key) => {
-    const subpath = parentPath ? `${parentPath}/${key}` : key
+  if (Array.isArray(obj)) {
+    return obj.filter((value, key) => !predicate(value, key))
+  }
+  return pickBy(obj, (value, key): boolean => {
     if (isObject(value)) {
-      eachDeep(value, callback, subpath)
-    } else {
-      callback(value, key, subpath)
+      return !isEmpty(omitByDeep(value, predicate))
     }
+    return !predicate(value, key)
   })
 }
 
 /**
  * @description Check patterns listed in `files` field exist or not
  */
-export const filesCheck = async ({ strict = true, cwd = process.cwd() }: CheckOptions) => {
-  let files: string[] = []
-  try {
-    const config: PackageJson = JSON.parse(readFileSync(`${cwd}/package.json`).toString('utf-8'))
-    files = config.files ?? []
-  } catch (_) {
-    throw new Error('error: package.json not found!')
-  }
+export const filesCheck = async ({ strict = true, pkg, cwd = process.cwd() }: CheckOptions) => {
+  const files: string[] = pkg?.files ?? []
   if (files.length === 0 && strict) {
-    throw new Error('error: files in package.json not found!')
+    throw new Error('files in package.json not found!')
   }
   // in non-strict mode, empty files is allowed
   // npm will always upload files in current directory
@@ -92,7 +87,7 @@ export const filesCheck = async ({ strict = true, cwd = process.cwd() }: CheckOp
   for (const [index, pattern] of files.entries()) {
     if (!results[index].length) {
       throw new Error(
-        `error: \`${pattern}\` looks like empty or not exist! Maybe you add it in ignore files or build failed?`,
+        `\`${pattern}\` looks like empty or not exist! Maybe you add it in ignore files or build failed?`,
       )
     }
   }
@@ -102,34 +97,34 @@ export const filesCheck = async ({ strict = true, cwd = process.cwd() }: CheckOp
 /**
  * @description Check `main & module` field file exist or not
  */
-export const mainCheck = async ({ cwd = process.cwd() }: CheckOptions) => {
-  const pkg = readPkgJson(cwd)
-  if (pkg.main && !existsSync(path.resolve(cwd, pkg.main))) {
-    throw new Error(`error: main field ${pkg.main} is not exist!`)
+export const mainCheck = async ({ cwd = process.cwd(), pkg }: CheckOptions) => {
+  if (pkg?.main && !existsSync(path.resolve(cwd, pkg.main))) {
+    throw new Error(`main field ${pkg.main} is not exist!`)
   }
-  if (pkg.module && !existsSync(path.resolve(cwd, pkg.module))) {
-    throw new Error(`error: module field ${pkg.module} is not exist!`)
+  if (pkg?.module && !existsSync(path.resolve(cwd, pkg.module))) {
+    throw new Error(`module field ${pkg.module} is not exist!`)
   }
+  return true
 }
 
 /**
  * @description Check `main & module` field file exist or not
  */
-export const exportsCheck = async ({ cwd = process.cwd() }: CheckOptions) => {
-  const exportsField = readPkgJson(cwd)?.exports
+export const exportsCheck = async ({ cwd = process.cwd(), pkg }: CheckOptions) => {
+  const exportsField = pkg?.exports
   if (!exportsField) {
     return
   }
-  const patterns: { subpath: string; pattern: string }[] = []
-  eachDeep(
+  const result = omitByDeep(
     typeof exportsField === 'string' ? [exportsField] : exportsField,
-    (pattern, _, subpath) => {
+    (pattern) => {
       const isExist = existsSync(path.resolve(cwd, pattern))
-      !isExist && patterns.push({ subpath, pattern })
+      return isExist
     },
   )
-  if (patterns.length !== 0) {
-    const msg = `${patterns.map((v) => `${v.subpath}: ${v.pattern}`).join('\n')} \n are not exist!`
+  if (!isEmpty(result)) {
+    const msg = `exports listed in \n${JSON.stringify(result, null, 2)} \nlooks like are not exist!`
     throw new Error(msg)
   }
+  return true
 }

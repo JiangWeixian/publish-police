@@ -1,6 +1,13 @@
-import { glob, filesCheck, mainCheck, exportsCheck } from '../src/lib'
-import { describe, it, expect } from 'vitest'
+import { glob, filesCheck, mainCheck, exportsCheck, readPkgJson } from '../src/lib'
+import { describe, it, expect, beforeAll } from 'vitest'
 import path from 'path'
+
+let emptyPkg: any = {}
+let basicPkg: any = {}
+beforeAll(() => {
+  emptyPkg = readPkgJson(path.resolve(__dirname, './fixtures/empty'))
+  basicPkg = readPkgJson(path.resolve(__dirname, './fixtures/basic'))
+})
 
 describe('glob', () => {
   it('non exit files should return empty array', async () => {
@@ -39,21 +46,29 @@ describe('glob', () => {
 describe('files-checker', () => {
   it('non-strict mode should work', async () => {
     expect(
-      await filesCheck({ strict: false, cwd: path.resolve(__dirname, './fixtures/empty') }),
+      await filesCheck({
+        strict: false,
+        cwd: path.resolve(__dirname, './fixtures/empty'),
+        pkg: emptyPkg,
+      }),
     ).toBe(true)
   })
 
   it('strict mode should work', async () => {
     expect(
       async () =>
-        await filesCheck({ strict: true, cwd: path.resolve(__dirname, './fixtures/empty') }),
-    ).to.rejects.toThrow('files in package.json not found!')
+        await filesCheck({
+          strict: true,
+          cwd: path.resolve(__dirname, './fixtures/empty'),
+          pkg: emptyPkg,
+        }),
+    ).rejects.toThrow('files in package.json not found!')
   })
 
   it('should work', async () => {
     const result = await filesCheck({
-      strict: false,
       cwd: path.resolve(__dirname, './fixtures/basic'),
+      pkg: basicPkg,
     })
     expect(result).toBe(true)
   })
@@ -61,18 +76,26 @@ describe('files-checker', () => {
 
 describe('main checker', () => {
   it('should work', () => {
-    mainCheck({ cwd: path.resolve(__dirname, './fixtures/basic') })
+    expect(
+      mainCheck({ cwd: path.resolve(__dirname, './fixtures/basic'), pkg: basicPkg }),
+    ).resolves.toBe(true)
   })
   it('throw error if empty main or module field', () => {
-    mainCheck({ cwd: path.resolve(__dirname, './fixtures/empty') })
+    expect(
+      mainCheck({ cwd: path.resolve(__dirname, './fixtures/empty'), pkg: emptyPkg }),
+    ).to.rejects.toThrowError()
   })
 })
 
 describe('exports checker', () => {
   it('should work', () => {
-    exportsCheck({ cwd: path.resolve(__dirname, './fixtures/basic') })
+    expect(
+      exportsCheck({ cwd: path.resolve(__dirname, './fixtures/basic'), pkg: basicPkg }),
+    ).resolves.toBe(true)
   })
-  it('throw error if empty main or module field', () => {
-    exportsCheck({ cwd: path.resolve(__dirname, './fixtures/empty') })
+  it('throw error sub-export not exit', () => {
+    expect(
+      exportsCheck({ cwd: path.resolve(__dirname, './fixtures/empty'), pkg: emptyPkg }),
+    ).to.rejects.toThrowError()
   })
 })
