@@ -3,6 +3,7 @@ import path from 'path'
 import type { PackageJson } from 'type-fest'
 import { globby } from 'globby'
 import { pickBy, isObject, isEmpty } from 'lodash-es'
+import colors from 'picocolors'
 
 interface Options {
   pkg?: PackageJson
@@ -87,7 +88,9 @@ export const filesCheck = async ({ strict = true, pkg, cwd = process.cwd() }: Ch
   for (const [index, pattern] of files.entries()) {
     if (!results[index].length) {
       throw new Error(
-        `\`${pattern}\` looks like empty or not exist! Maybe you add it in ignore files by mistake or forget to exec build script?`,
+        `${colors.red(
+          `"files": ["${pattern}"]`,
+        )} looks like empty or not exist! Maybe you add it in ignore files by mistake or forget to exec build script?`,
       )
     }
   }
@@ -100,12 +103,16 @@ export const filesCheck = async ({ strict = true, pkg, cwd = process.cwd() }: Ch
 export const mainCheck = async ({ cwd = process.cwd(), pkg }: CheckOptions) => {
   if (pkg?.main && !existsSync(path.resolve(cwd, pkg.main))) {
     throw new Error(
-      `${pkg.main} in main field is not exist! Maybe you add it in ignore files by mistake or forget to exec build script?`,
+      `${colors.red(
+        `"main": ${pkg.main}`,
+      )} is not exist! Maybe you add it in ignore files by mistake or forget to exec build script?`,
     )
   }
   if (pkg?.module && !existsSync(path.resolve(cwd, pkg.module))) {
     throw new Error(
-      `${pkg.module} in module field is not exist! Maybe you add it in ignore files by mistake or forget to exec build script?`,
+      `${colors.red(
+        `"module": ${pkg.main}`,
+      )} is not exist! Maybe you add it in ignore files by mistake or forget to exec build script?`,
     )
   }
   return true

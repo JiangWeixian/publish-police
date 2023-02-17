@@ -23,15 +23,6 @@
     "email": "jiangweixian1994@gmail.com",
     "url": "https://twitter.com/jiangweixian"
   },
-  "exports": {
-    ".": "lib/index.js",
-    "feature": {
-      "import": "lib/main.js"
-    },
-    "feature1": {
-      "import": "lib/main.js"
-    }
-  },
   "bin": {
     "publish-police": "bin/index.mjs"
   },

@@ -29,9 +29,11 @@ cli
         ],
         { renderer: mlistr },
       )
-      tasks.run()
+      tasks.run().catch(() => {
+        process.exit(1)
+      })
     } catch (e) {
-      process.exit(1)
+      process.exit(0)
     }
   })
 
