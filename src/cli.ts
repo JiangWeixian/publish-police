@@ -18,14 +18,14 @@ cli
       const tasks = new Listr(
         [
           {
-            title: `Check ${colors.cyan('`files`')} field`,
+            title: `Check ${colors.cyan('`files`')}`,
             task: () => filesCheck({ strict: options.strict, pkg }),
           },
           {
-            title: `Check ${colors.cyan('`main and module`')} field`,
+            title: `Check ${colors.cyan('`main and module`')}`,
             task: () => mainCheck({ pkg }),
           },
-          { title: `Check ${colors.cyan('`exports`')} field`, task: () => exportsCheck({ pkg }) },
+          { title: `Check ${colors.cyan('`exports`')}`, task: () => exportsCheck({ pkg }) },
         ],
         { renderer: mlistr },
       )
