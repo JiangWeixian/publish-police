@@ -1,5 +1,5 @@
 # publish-police
-*check npm package dist before publish*
+*Check npm package dist before publish (yep, I always forgot to build before publish)*
 
 [![npm](https://img.shields.io/npm/v/publish-police)](https://github.com/JiangWeixian/publish-police) [![GitHub](https://img.shields.io/npm/l/publish-police)](https://github.com/JiangWeixian/publish-police)
 
@@ -13,11 +13,15 @@ pnpm i publish-police -D
 
 ```json
 {
-  "files": ["<pattern>"]
+  "files": ["<pattern>"],
+  "exports": {
+    // ...exports
+  },
 }
 ```
 
-check `files` fields in `package.json` is exit on disk.
+1. Check `files` fields in `package.json` is exit on disk.
+2. Check file listed in `exports` fields in `package.json` is exit on disk.
 
 ### options
 

@@ -1,9 +1,31 @@
-import { readFileSync } from 'fs'
-import type { PackageJson } from 'type-fest'
-import { globby } from 'globby'
+import { existsSync, readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 
-type Options = {
-  cwd?: string
+import { globby } from 'globby'
+import {
+  forEach,
+  isEmpty,
+  isObject,
+  isString,
+} from 'lodash-es'
+
+import type { PackageJson } from 'type-fest'
+
+interface Options {
+  root?: string
+  /**
+   * @description Stric check
+   * - true
+   *  If files not defined, will throw error.
+   * @default true
+   */
+  strict?: boolean
+}
+
+interface ResolvedOptions {
+  root: string
+  strict: boolean
+  packageJson: PackageJson
 }
 
 // https://docs.npmjs.com/cli/v8/configuring-npm/package-json#files
@@ -26,30 +48,38 @@ const DefaultIgnore = [
   'node_modules',
 ]
 
-export const glob = async (files: string[], options: Options = { cwd: process.cwd() }) => {
+export const glob = async (files: string[], options: Pick<Options, 'root'> = { root: process.cwd() }) => {
   const results = await Promise.all(
-    files.map((file) =>
+    files.map(file =>
       globby(file, {
         ignore: DefaultIgnore,
         dot: true,
-        ...options,
+        cwd: options.root,
       }),
     ),
   )
   return results
 }
 
-export const distCheck = async ({
-  strict = true,
-  cwd = process.cwd(),
-}: Options & { strict?: boolean }) => {
-  let files: string[] = []
+export const resolveOptions = ({ root = process.cwd(), strict = true }: Options): ResolvedOptions => {
+  let packageJson: PackageJson = {}
   try {
-    const config: PackageJson = JSON.parse(readFileSync(`${cwd}/package.json`).toString('utf-8'))
-    files = config.files ?? []
-  } catch (_) {
+    packageJson = JSON.parse(readFileSync(`${root}/package.json`).toString('utf-8'))
+  } catch (e) {
     throw new Error('package.json not found!')
   }
+  return {
+    packageJson,
+    root,
+    strict,
+  }
+}
+
+/**
+ * @description Check files field in `package.json`
+ */
+export const distCheck = async ({ strict, packageJson, root }: ResolvedOptions) => {
+  const files: string[] = packageJson.files ?? []
   if (files.length === 0 && strict) {
     throw new Error('files in package.json not found!')
   }
@@ -58,7 +88,7 @@ export const distCheck = async ({
   if (files.length === 0 && !strict) {
     return true
   }
-  const results = await glob(files, { cwd })
+  const results = await glob(files, { root })
   for (const [index, pattern] of files.entries()) {
     if (!results[index].length) {
       throw new Error(
@@ -66,5 +96,33 @@ export const distCheck = async ({
       )
     }
   }
+  return true
+}
+
+/**
+ * @description Check exports field in `package.json`
+ */
+export const exportsCheck = async ({ packageJson, root }: ResolvedOptions): Promise<boolean> => {
+  const exports = packageJson.exports ?? {}
+  // Skip exports field not defined
+  // SKip empty exports field
+  if (!exports || (isObject(exports) && isEmpty(exports))) {
+    return true
+  }
+  const check = (exportedValue: NonNullable<PackageJson['exports']>) => {
+    if (isString(exportedValue)) {
+      const filepath = resolve(root, exportedValue)
+      if (!existsSync(filepath)) {
+        throw new Error(`${exportedValue} looks like not exit!`)
+      }
+      return
+    }
+    forEach(exportedValue, (value) => {
+      if (isObject(value) || isString(value)) {
+        check(value as NonNullable<PackageJson['exports']>)
+      }
+    })
+  }
+  check(exports)
   return true
 }

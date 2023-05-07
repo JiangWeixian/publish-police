@@ -1,6 +1,24 @@
-import { glob, distCheck } from '../src/lib'
-import { describe, it, expect } from 'vitest'
-import path from 'path'
+import path from 'node:path'
+
+import {
+  describe,
+  expect,
+  it,
+} from 'vitest'
+
+import {
+  distCheck,
+  exportsCheck,
+  glob,
+  resolveOptions,
+} from '../src/lib'
+
+describe('resolve options', () => {
+  it('resolve options', () => {
+    const resolvedOptions = resolveOptions({ root: path.resolve(__dirname, './fixtures/basic'), strict: true })
+    expect(resolvedOptions).toMatchSnapshot()
+  })
+})
 
 describe('glob', () => {
   it('non exit files should return empty array', async () => {
@@ -20,11 +38,11 @@ describe('glob', () => {
   })
 
   it('cwd should work', async () => {
-    const results = await glob(['lib'], { cwd: path.resolve(__dirname, './fixtures/basic') })
+    const results = await glob(['lib'], { root: path.resolve(__dirname, './fixtures/basic') })
     expect(results[0]).toMatchInlineSnapshot(`
-    [
-      "lib/.gitkeep",
-    ]
+      [
+        "lib/.gitkeep",
+      ]
     `)
   })
 
@@ -37,23 +55,40 @@ describe('glob', () => {
 
 describe('dist-checker', () => {
   it('non-strict mode should work', async () => {
+    const resolvedOptions = resolveOptions({ root: path.resolve(__dirname, './fixtures/empty'), strict: false })
     expect(
-      await distCheck({ strict: false, cwd: path.resolve(__dirname, './fixtures/empty') }),
+      await distCheck(resolvedOptions),
     ).toBe(true)
   })
 
   it('strict mode should work', async () => {
+    const resolvedOptions = resolveOptions({ root: path.resolve(__dirname, './fixtures/empty'), strict: true })
     expect(
       async () =>
-        await distCheck({ strict: true, cwd: path.resolve(__dirname, './fixtures/empty') }),
+        await distCheck(resolvedOptions),
     ).to.rejects.toThrow('files in package.json not found!')
   })
 
   it('should work', async () => {
-    const result = await distCheck({
-      strict: false,
-      cwd: path.resolve(__dirname, './fixtures/basic'),
-    })
+    const resolvedOptions = resolveOptions({ root: path.resolve(__dirname, './fixtures/basic'), strict: false })
+    const result = await distCheck(resolvedOptions)
     expect(result).toBe(true)
+  })
+})
+
+describe('exports checker', () => {
+  it('skip empty exports field', async () => {
+    const resolvedOptions = resolveOptions({ root: path.resolve(__dirname, './fixtures/empty'), strict: false })
+    expect(
+      await exportsCheck(resolvedOptions),
+    ).toBe(true)
+  })
+
+  it('should throw on non-export files', async () => {
+    const resolvedOptions = resolveOptions({ root: path.resolve(__dirname, './fixtures/basic'), strict: false })
+    expect(
+      async () =>
+        await exportsCheck(resolvedOptions),
+    ).to.rejects.toThrow('./lib/cli.mjs looks like not exit!')
   })
 })

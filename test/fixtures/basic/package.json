@@ -1,5 +1,12 @@
 {
-  "files": [
-    "lib"
-  ]
+  "files": ["lib"],
+  "exports": {
+    "./a": {
+      "node": {
+        "require": "./exports/test.js"
+      }
+    },
+    "./b": "./exports/test.js",
+    ".": "./lib/cli.mjs"
+  }
 }

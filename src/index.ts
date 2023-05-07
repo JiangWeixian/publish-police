@@ -1,1 +1,1 @@
-export { distCheck } from './lib'
+export { distCheck, exportsCheck } from './lib'
