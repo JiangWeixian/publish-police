@@ -2,6 +2,7 @@
   "name": "publish-police",
   "version": "0.0.3",
   "description": "check npm dist before publish",
+  "packageManager": "pnpm@7.29.3",
   "keywords": [
     "npm",
     "cli",
