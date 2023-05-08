@@ -1,0 +1,22 @@
+// Vitest Snapshot v1
+
+exports[`resolve options > resolve options 1`] = `
+{
+  "packageJson": {
+    "exports": {
+      ".": "./lib/cli.mjs",
+      "./a": {
+        "node": {
+          "require": "./exports/test.js",
+        },
+      },
+      "./b": "./exports/test.js",
+    },
+    "files": [
+      "lib",
+    ],
+  },
+  "root": "<rootDir>",
+  "strict": true,
+}
+`;
