@@ -16,6 +16,7 @@ import {
 describe('resolve options', () => {
   it('resolve options', () => {
     const resolvedOptions = resolveOptions({ root: path.resolve(__dirname, './fixtures/basic'), strict: true })
+    resolvedOptions.root = '<rootDir>'
     expect(resolvedOptions).toMatchSnapshot()
   })
 })

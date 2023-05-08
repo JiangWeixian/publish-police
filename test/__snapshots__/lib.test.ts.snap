@@ -16,7 +16,7 @@ exports[`resolve options > resolve options 1`] = `
       "lib",
     ],
   },
-  "root": "/Users/jiangwei/projects/publish-police/test/fixtures/basic",
+  "root": "<rootDir>",
   "strict": true,
 }
 `;
