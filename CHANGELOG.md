@@ -1,5 +1,11 @@
 # publish-police
 
+## 0.1.0
+
+### Minor Changes
+
+- 1fc3547: support check exports fields
+
 ## 0.0.3
 
 ### Patch Changes
