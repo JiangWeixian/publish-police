@@ -1,5 +1,15 @@
 # publish-police
 
+## 0.2.0
+
+### Minor Changes
+
+- 5cc7362: deprecate node14
+
+### Patch Changes
+
+- 5cc7362: check exported pattern is listed in files
+
 ## 0.1.0
 
 ### Minor Changes
