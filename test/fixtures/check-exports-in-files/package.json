@@ -1,5 +1,5 @@
 {
-  "files": ["lib", "exports"],
+  "files": ["dir"],
   "exports": {
     "./a": {
       "node": {
@@ -7,6 +7,6 @@
       }
     },
     "./b": "./exports/test.js",
-    ".": "./lib/cli.mjs"
+    ".": "./dir/cli.mjs"
   }
 }

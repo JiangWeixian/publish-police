@@ -26,6 +26,11 @@ interface ResolvedOptions {
   root: string
   strict: boolean
   packageJson: PackageJson
+  /**
+   * @description Resolved glob files
+   * @example if package.files length eqauls 2, files length also equals 2
+   */
+  files: string[][]
 }
 
 // https://docs.npmjs.com/cli/v8/configuring-npm/package-json#files
@@ -61,24 +66,27 @@ export const glob = async (files: string[], options: Pick<Options, 'root'> = { r
   return results
 }
 
-export const resolveOptions = ({ root = process.cwd(), strict = true }: Options): ResolvedOptions => {
+export const resolveOptions = async ({ root = process.cwd(), strict = true }: Options): Promise<ResolvedOptions> => {
   let packageJson: PackageJson = {}
   try {
     packageJson = JSON.parse(readFileSync(`${root}/package.json`).toString('utf-8'))
   } catch (e) {
     throw new Error('package.json not found!')
   }
+  const files: string[] = packageJson.files ?? []
+  const resolvedFiles = await glob(files, { root })
   return {
     packageJson,
     root,
     strict,
+    files: resolvedFiles,
   }
 }
 
 /**
  * @description Check files field in `package.json`
  */
-export const distCheck = async ({ strict, packageJson, root }: ResolvedOptions) => {
+export const distCheck = async ({ strict, packageJson, root, files: resolvedFiles }: ResolvedOptions) => {
   const files: string[] = packageJson.files ?? []
   if (files.length === 0 && strict) {
     throw new Error('files in package.json not found!')
@@ -88,7 +96,7 @@ export const distCheck = async ({ strict, packageJson, root }: ResolvedOptions) 
   if (files.length === 0 && !strict) {
     return true
   }
-  const results = await glob(files, { root })
+  const results = resolvedFiles ?? await glob(files, { root })
   for (const [index, pattern] of files.entries()) {
     if (!results[index].length) {
       throw new Error(
@@ -102,21 +110,33 @@ export const distCheck = async ({ strict, packageJson, root }: ResolvedOptions) 
 /**
  * @description Check exports field in `package.json`
  */
-export const exportsCheck = async ({ packageJson, root }: ResolvedOptions): Promise<boolean> => {
+export const exportsCheck = async ({ packageJson, root, files }: ResolvedOptions): Promise<boolean> => {
   const exports = packageJson.exports ?? {}
   // Skip exports field not defined
   // SKip empty exports field
   if (!exports || (isObject(exports) && isEmpty(exports))) {
     return true
   }
+  const flatFiles = files.reduce((acc, cur) => acc.concat(cur), [])
+  const checkExportFileValid = (exportedValue: string) => {
+    const filepath = resolve(root, exportedValue)
+    // 1. If filepath not exit, throw error
+    // 2. If flatFiles not empty, and filepath not in flatFiles, throw error
+    if (!existsSync(filepath)) {
+      throw new Error(`${exportedValue} looks like not exit!`)
+    }
+    if ((packageJson.files && !flatFiles.includes(filepath.replace(`${root}/`, '')))) {
+      throw new Error(`${exportedValue} looks like not included in \`files\`!`)
+    }
+  }
   const check = (exportedValue: NonNullable<PackageJson['exports']>) => {
+    // exports: <filepath>
+    // TODO: support https://nodejs.org/api/packages.html#subpath-patterns
     if (isString(exportedValue)) {
-      const filepath = resolve(root, exportedValue)
-      if (!existsSync(filepath)) {
-        throw new Error(`${exportedValue} looks like not exit!`)
-      }
+      checkExportFileValid(exportedValue)
       return
     }
+    // exports: {}
     forEach(exportedValue, (value) => {
       if (isObject(value) || isString(value)) {
         check(value as NonNullable<PackageJson['exports']>)
