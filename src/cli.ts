@@ -14,8 +14,8 @@ cli
   .option('--strict', 'Strict mode', {
     default: true,
   })
-  .action((options) => {
-    const resolvedOptions = resolveOptions({ root: process.cwd(), strict: options.strict })
+  .action(async (options) => {
+    const resolvedOptions = await resolveOptions({ root: process.cwd(), strict: options.strict })
     Promise.all([
       distCheck(resolvedOptions),
       exportsCheck(resolvedOptions),
