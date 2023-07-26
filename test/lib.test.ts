@@ -56,14 +56,14 @@ describe('glob', () => {
 })
 
 describe('dist-checker', () => {
-  it('non-strict mode should work', async () => {
+  it('empty files should pass on non-strict mode', async () => {
     const resolvedOptions = await resolveOptions({ root: path.resolve(__dirname, './fixtures/empty'), strict: false })
     expect(
       await distCheck(resolvedOptions),
     ).toBe(true)
   })
 
-  it('strict mode should work', async () => {
+  it('empty files should failed on strict mode', async () => {
     const resolvedOptions = await resolveOptions({ root: path.resolve(__dirname, './fixtures/empty'), strict: true })
     expect(
       async () =>
@@ -94,6 +94,7 @@ describe('exports checker', () => {
     ).to.rejects.toThrow('./lib/cli.mjs looks like not exit!')
   })
 
+  // package.json always include by npm
   it('should throw if files filed not empty and export file not include in files', async () => {
     const resolvedOptions = await resolveOptions({ root: path.resolve(__dirname, './fixtures/check-exports-in-files'), strict: false })
     expect(

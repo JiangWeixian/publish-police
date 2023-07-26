@@ -23,6 +23,7 @@ cli
       consola.error(e.message)
       process.exit(1)
     })
+    consola.success('All checks passed!')
   })
 
 cli.parse()

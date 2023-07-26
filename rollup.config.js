@@ -15,7 +15,7 @@ export default defineConfig([
   // an array for the `output` option, where we can specify
   // `file` and `format` for each target)
   {
-    input: 'src/cli.ts',
+    input: ['src/cli.ts', 'src/index.ts'],
     preserveEntrySignatures: 'strict',
     plugins: [
       externals({

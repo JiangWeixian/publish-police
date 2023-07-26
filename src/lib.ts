@@ -53,6 +53,12 @@ const DefaultIgnore = [
   'node_modules',
 ]
 
+const DefaultInclude = [
+  'README.md',
+  'package.json',
+  'LICENSE',
+]
+
 export const glob = async (files: string[], options: Pick<Options, 'root'> = { root: process.cwd() }) => {
   const results = await Promise.all(
     files.map(file =>
@@ -73,7 +79,7 @@ export const resolveOptions = async ({ root = process.cwd(), strict = true }: Op
   } catch (e) {
     throw new Error('package.json not found!')
   }
-  const files: string[] = packageJson.files ?? []
+  const files: string[] = (packageJson.files ?? []).concat(DefaultInclude)
   const resolvedFiles = await glob(files, { root })
   return {
     packageJson,
