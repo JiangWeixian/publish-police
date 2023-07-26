@@ -1,5 +1,11 @@
 # publish-police
 
+## 0.2.1
+
+### Patch Changes
+
+- 0a19093: automatic include npm default include files
+
 ## 0.2.0
 
 ### Minor Changes
