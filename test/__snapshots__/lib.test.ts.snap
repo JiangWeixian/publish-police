@@ -9,9 +9,11 @@ exports[`resolve options > resolve options 1`] = `
     [
       "exports/test.js",
     ],
-    "README.md",
-    "package.json",
-    "LICENSE",
+    [],
+    [
+      "package.json",
+    ],
+    [],
   ],
   "packageJson": {
     "exports": {
