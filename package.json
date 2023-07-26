@@ -29,13 +29,25 @@
   },
   "files": [
     "lib",
-    "bin"
+    "bin",
+    "dts"
   ],
   "bin": {
     "publish-police": "bin/index.mjs"
   },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dts/index.d.ts",
+      "import": "./lib/index.mjs"
+    }
+  },
+  "module": "lib/index.mjs",
+  "typings": "dts/index.d.ts",
   "scripts": {
-    "build": "rimraf lib && rollup -c",
+    "build:dts": "tsc",
+    "build:lib": "rimraf lib && rollup -c",
+    "build": "pnpm run build:dts && pnpm run build:lib",
     "dev": "rollup -c --silent -w",
     "vitest": "vitest",
     "test": "pnpm run build && pnpm run vitest",

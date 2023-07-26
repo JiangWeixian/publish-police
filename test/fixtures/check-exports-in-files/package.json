@@ -7,6 +7,7 @@
       }
     },
     "./b": "./exports/test.js",
-    ".": "./dir/cli.mjs"
+    ".": "./dir/cli.mjs",
+    "./package.json": "./package.json"
   }
 }

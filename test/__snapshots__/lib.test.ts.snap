@@ -9,6 +9,11 @@ exports[`resolve options > resolve options 1`] = `
     [
       "exports/test.js",
     ],
+    [],
+    [
+      "package.json",
+    ],
+    [],
   ],
   "packageJson": {
     "exports": {
@@ -19,6 +24,7 @@ exports[`resolve options > resolve options 1`] = `
         },
       },
       "./b": "./exports/test.js",
+      "./package.json": "./package.json",
     },
     "files": [
       "lib",
